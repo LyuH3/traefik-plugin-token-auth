@@ -1,0 +1,10 @@
+displayName: Token Auth Plugin
+type: middleware
+
+import: github.com/LyuHe-uestc/traefik-plugin-token-auth
+
+summary: 'github.com/LyuHe-uestc/traefik-plugin-token-auth'
+
+testData:
+  AuthKind : "basic"
+  users : ["test:$apr1$MWLr0jtE$0Dcapf0QGeX0QoKyh3BSp1"]
