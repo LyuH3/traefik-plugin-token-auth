@@ -1,0 +1,23 @@
+@startuml
+namespace traefik_plugin_token_auth {
+    class Config << (S,Aquamarine) >> {
+        + SecretPram string
+        + SecretValue string
+        + SecretKind string
+
+    }
+    class Token_auth << (S,Aquamarine) >> {
+        - next http.Handler
+        - name string
+        - conf *Config
+
+        + ServeHTTP(rw http.ResponseWriter, req *http.Request) 
+
+    }
+}
+
+
+"traefik_plugin_token_auth.Token_auth""uses" o-- "http.Handler"
+"traefik_plugin_token_auth.Token_auth""uses" o-- "traefik_plugin_token_auth.Config"
+
+@enduml

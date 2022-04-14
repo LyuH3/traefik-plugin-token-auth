@@ -1,0 +1,72 @@
+package traefik_plugin_token_auth
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+)
+
+type Config struct{
+	SecretPram	string	
+	SecretValue	string	
+	SecretKind	string	
+}
+
+func CreateConfig() *Config {
+	return &Config{
+		SecretPram: "",
+		SecretValue: "",
+		SecretKind: "",
+	}
+}
+
+type Token_auth struct {
+	next	http.Handler
+	name	string
+	conf 	*Config		
+}
+
+func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
+	return &Token_auth{
+		next: next,
+		name: name,
+		conf: config,
+	}, nil
+}
+
+func (t *Token_auth) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	secPram := t.conf.SecretPram
+	secValue := t.conf.SecretValue
+	secKind := t.conf.SecretKind
+
+	switch secKind {
+	//判断key的位置
+	case "cookie":
+		//判断key是否存在
+		if req.Header.Get("cookie") != "" {
+			little_cookie , _ := req.Cookie(secPram)
+			//提取key,判断是否符合
+			if little_cookie.Value != secValue {
+				http.Error(rw, fmt.Errorf("Wrong Sec Value").Error(), http.StatusUnauthorized)
+				return
+			}
+		}
+	case "header":
+		//判断key是否存在，提取key，判断是否符合
+		if req.Header.Get(secPram) != secValue {
+			http.Error(rw, fmt.Errorf("Wrong Sec Value").Error(), http.StatusUnauthorized)
+			return
+		}
+	default:
+		http.Error(rw, fmt.Errorf("secretKind must be cookie or header").Error(), http.StatusInternalServerError)
+		return 
+	}
+
+	t.next.ServeHTTP(rw, req)
+}
+
+func reject(rw http.ResponseWriter) {
+	statusCode := http.StatusForbidden
+
+	rw.WriteHeader(statusCode)
+}
