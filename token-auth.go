@@ -25,7 +25,7 @@ type Config struct {
 
 func CreateConfig() *Config {
 	return &Config{
-		AuthKind:     "token",
+		AuthKind:     "",
 		SecretPram:   "",
 		SecretValue:  "",
 		SecretKind:   "",
