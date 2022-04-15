@@ -109,7 +109,8 @@ func (a *Auth) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 				if secret == "" || !goauth.CheckSecret(password, secret) {
 					ok = false
 				}
-			} else {
+			} 
+			if !ok {
 				a.auth.RequireAuth(rw, req)
 				return
 			}
